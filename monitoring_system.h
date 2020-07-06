@@ -187,12 +187,16 @@ void printQR(String strData, String nodeName)
 
 void connectEEPROM()
 {
-    if (!EEPROM.begin(200)) {
-        Serial.println("Failed to initialise EEPROM");
-        Serial.println("Restarting...");
-        delay(1000);
-        ESP.restart();
-    }
+  
+
+  if (!EEPROM.begin(200)) {
+      Serial.println("Failed to initialise EEPROM");
+      Serial.println("Restarting...");
+      delay(1000);
+      ESP.restart();
+  }
+
+  
 }
 
 void updateEEPROMFromSerial()
@@ -256,6 +260,17 @@ void clearLoraSerial()
   }
 }
 
+
+void setupPin(){
+  pinMode(pinM0, OUTPUT);
+  pinMode(pinM1, OUTPUT);
+  pinMode(32, OUTPUT);
+  digitalWrite(32, LOW);
+}
+
+/*
+Setup Parameter LoRa
+*/
 void setupParameterLoRa()
 {
     digitalWrite(pinM0, HIGH); //M0
@@ -268,6 +283,31 @@ void setupParameterLoRa()
     digitalWrite(pinM0, LOW); //M0
     digitalWrite(pinM1, LOW); //M1
 }
+
+/*
+Setup LoRa
+*/
+void setupLoRa(int id){
+  //setup lora
+  loraSerial.begin(9600, SERIAL_8N1, pinRX, pinTX);
+  loraSerial.setTimeout(200);
+  
+  
+  
+  clearLoraSerial();
+  clearSerial();
+  
+  //get adl and adh
+  myAdl = id / 256;
+  myAdh = id % 256;
+
+  //set sleep mode in LoRa & settting parameter lora
+  setupParameterLoRa();
+
+  
+}
+
+
 
 bool checkMessageFromLoRaOrNot(String incomingString)
 {
